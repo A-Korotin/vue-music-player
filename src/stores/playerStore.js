@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { playlistApi, trackApi } from '@/api/index'
 
 export const playerStore = defineStore('player', {
     state: () => ({
@@ -26,7 +25,8 @@ export const playerStore = defineStore('player', {
         }],
         playlists: [{
             id: 1,
-            name: "Test playlist"
+            name: "Liked",
+            tracks: []
         }],
     }),
 
@@ -41,33 +41,27 @@ export const playerStore = defineStore('player', {
             this.currentSong = this.queue[this.currentSongIndex];
         },
 
-        async createPlaylist(token, playlist) {
-            const created = await playlistApi.createPlaylist(token, playlist);
-            if (playlist.data) {
-                await this.loadPlaylists(token);
+        getNextId() {
+            if (this.playlists.length === 0) {
+                return 1;
             }
 
-            return created;
+            return this.playlists.at(-1).id + 1;
         },
 
-
-        async loadPlaylists(token) {
-            const playlists = await playlistApi.getPlaylists(token);
-            if (playlists.data) {
-                this.playlists = playlists.data;
-            }
-            return playlists;
+        createPlaylist(playlist) {
+            playlist['id'] = this.getNextId();
+            playlist.tracks = [];
+            this.playlists.push(playlist);
+            return playlist;
         },
 
-        async likeTrack(token, track) {
+        likeTrack(track) {
             let likedPlaylist = this.playlists.find((p) => p.name === 'Liked');
             if (likedPlaylist === undefined) {
-                likedPlaylist = await this.createPlaylist(token, { name: 'Liked', userId: track['userId'] }).data;
+                likedPlaylist = this.createPlaylist({ name: 'Liked' });
             }
-
-            const response = await trackApi.addToPlaylist(token, track, likedPlaylist.id);
-            likedPlaylist.tracks.push(response.data);
-            return response;
+            likedPlaylist.tracks.push(track);
         }
     }
 

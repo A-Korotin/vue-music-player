@@ -21,7 +21,7 @@
                 </div>
                 <div class="column justify-center q-pl-lg">
                     <p class="text-accent text-subtitle1">Collection</p>
-                    <p class="text-h3 ellipsis text-wrap mw-90 q-pb-xs"> {{ user.email }} </p>
+                    <p class="text-h3 ellipsis text-wrap mw-90 q-pb-xs"> Username </p>
                     <div>
                         <q-btn class="play-collection-button" text-color="primary" rounded color="secondary" label="Play" />
                     </div>
@@ -39,9 +39,8 @@
 import PlaylistCard from '@/components/PlaylistCard.vue'
 import TrackCard from '@/components/TrackCard.vue'
 
-import { authStore } from '@/stores/authStore'
 import { playerStore } from '@/stores/playerStore'
-import { mapState, mapActions, mapWritableState } from 'pinia'
+import { mapState, mapWritableState } from 'pinia'
 
 export default {
     data() {
@@ -51,18 +50,11 @@ export default {
             playlistName: ''
         });
     },
-
-    setup() {
-
-    },
-
     computed: {
-        ...mapState(authStore, ['user', 'accessToken']),
         ...mapState(playerStore, ['playlists']),
         ...mapWritableState(playerStore, ['queue'])
     },
     methods: {
-        ...mapActions(playerStore, ['loadPlaylists']),
 
         openPlaylist(playlistToOpen) {
             const id = playlistToOpen.id;
@@ -75,10 +67,6 @@ export default {
         onPlayClick() {
             this.queue = this.playlistTracks;
         }
-    },
-
-    async mounted() {
-        this.loadPlaylists(this.accessToken);
     },
 
     components: { PlaylistCard, TrackCard }

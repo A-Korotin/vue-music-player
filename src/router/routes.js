@@ -1,20 +1,18 @@
 
 const routes = [
   {
-    path: '/auth',
-    component: () => import('@/layouts/AuthLayout.vue'),
-    children: [
-      { path: 'login', name: 'Login', component: () => import('@/pages/LoginPage.vue'), meta: { requiresAuth: false } },
-      { path: 'register', name: 'Register', component: () => import('@/pages/SignUpPage.vue'), meta: { requiresAuth: false } }
-    ]
-  },
-  {
     path: '/',
     component: () => import("@/layouts/MainLayout.vue"),
     meta: {
       requiresAuth: true
     },
     children: [
+      {
+        path: '',
+        name: 'Collection1',
+        component: () => import('@/pages/CollectionPage.vue'),
+        meta: { requiresAuth: true }
+      },
       {
         path: 'collection',
         name: 'Collection',
@@ -27,6 +25,10 @@ const routes = [
         component: () => import('@/pages/SearchPage.vue'),
         meta: { requiresAuth: true },
         props: (route) => ({ query: route.query.q })
+      },
+      {
+        path: '/:catchAll(.*)*',
+        component: () => import('pages/ErrorNotFound.vue')
       }
     ]
   },
